@@ -1,3 +1,6 @@
+using _01_ASP_MVC.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace _01_ASP_MVC
 {
     public class Program
@@ -8,6 +11,11 @@ namespace _01_ASP_MVC
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            // Add db context
+            builder.Services.AddDbContext<AppDBContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerLocal"));
+            });
 
             var app = builder.Build();
 

@@ -12,7 +12,6 @@ namespace _01_ASP_MVC.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             return View();
