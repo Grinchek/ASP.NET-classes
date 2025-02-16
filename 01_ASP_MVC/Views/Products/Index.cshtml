@@ -49,7 +49,7 @@
                 @Html.DisplayFor(modelItem => item.Amount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Image)
+                    <img width="100" alt="@item.Name" src="~/images/products/@(item.Image ?? "default.png")" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Category.Name)

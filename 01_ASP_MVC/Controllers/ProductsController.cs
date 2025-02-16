@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _01_ASP_MVC.Data;
 using _01_ASP_MVC.Models;
+using Microsoft.Extensions.Hosting;
+using _01_ASP_MVC.ViewModels;
 
 namespace _01_ASP_MVC.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly AppDBContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProductsController(AppDBContext context)
+        public ProductsController(AppDBContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Products
@@ -48,26 +52,40 @@ namespace _01_ASP_MVC.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["CategiryId"] = new SelectList(_context.Categories, "Id", "Name");
-            return View();
+            var categories = _context.Categories.AsEnumerable();
+
+            var viewModel = new CreateProductVM
+            {
+                Product = new Product(),
+                Categories = categories.Select(c =>
+                new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id
+                })
+            };
+
+            return View(viewModel);
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Amount,Image,CategiryId")] Product product)
+        public async Task <IActionResult> Create([FromForm] CreateProductVM viewModel)
         {
-            if (ModelState.IsValid)
+            string? imagePath = null;
+
+            if (viewModel.File != null)
             {
-                product.Id = Guid.NewGuid().ToString();
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                imagePath = SaveImage(viewModel.File);
             }
-            ViewData["CategiryId"] = new SelectList(_context.Categories, "Id", "Id", product.CategiryId);
-            return View(product);
+
+            viewModel.Product.Image = imagePath;
+            viewModel.Product.Id = Guid.NewGuid().ToString();
+            _context.Products.Add(viewModel.Product);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
         // GET: Products/Edit/5
@@ -83,18 +101,28 @@ namespace _01_ASP_MVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategiryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategiryId);
-            return View(product);
+
+            var categories = _context.Categories.AsEnumerable();
+
+            var viewModel = new CreateProductVM
+            {
+                Product = product,
+                Categories = categories.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id
+                })
+            };
+
+            return View(viewModel);
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Description,Price,Amount,Image,CategiryId")] Product product)
+        public async Task<IActionResult> Edit(string id, [FromForm] CreateProductVM viewModel)
         {
-            if (id != product.Id)
+            if (id != viewModel.Product.Id)
             {
                 return NotFound();
             }
@@ -103,12 +131,28 @@ namespace _01_ASP_MVC.Controllers
             {
                 try
                 {
+                    var product = await _context.Products.FindAsync(id);
+                    if (product == null)
+                    {
+                        return NotFound();
+                    }
+                    product.Name = viewModel.Product.Name;
+                    product.Description = viewModel.Product.Description;
+                    product.Price = viewModel.Product.Price;
+                    product.Amount = viewModel.Product.Amount;
+                    product.CategiryId = viewModel.Product.CategiryId;
+
+                    if (viewModel.File != null)
+                    {
+                        product.Image = SaveImage(viewModel.File);
+                    }
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!ProductExists(viewModel.Product.Id))
                     {
                         return NotFound();
                     }
@@ -119,8 +163,8 @@ namespace _01_ASP_MVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategiryId"] = new SelectList(_context.Categories, "Id", "Id", product.CategiryId);
-            return View(product);
+
+            return View(viewModel);
         }
 
         // GET: Products/Delete/5
@@ -160,6 +204,27 @@ namespace _01_ASP_MVC.Controllers
         private bool ProductExists(string id)
         {
             return _context.Products.Any(e => e.Id == id);
+        }
+        private string? SaveImage(IFormFile file)
+        {
+            var types = file.ContentType.Split("/");
+            if (types[0] != "image")
+            {
+                return null;
+            }
+
+            string fileName = $"{Guid.NewGuid()}.{types[1]}";
+            string imagesPath = Path.Combine(_environment.WebRootPath, "images", "products");
+            string filePath = Path.Combine(imagesPath, fileName);
+            using (var stream = file.OpenReadStream())
+            {
+                using (var fileStream = System.IO.File.Create(filePath))
+                {
+                    stream.CopyTo(fileStream);
+                }
+            }
+
+            return fileName;
         }
     }
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Desktop\\01_ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj": {}
+    "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Desktop\\01_ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj": {
+    "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Desktop\\01_ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj",
         "projectName": "01_ASP_MVC",
-        "projectPath": "C:\\Users\\User\\Desktop\\01_ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj",
+        "projectPath": "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\01_ASP_MVC.csproj",
         "packagesPath": "C:\\Users\\warni\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Desktop\\01_ASP_MVC\\01_ASP_MVC\\obj\\",
+        "outputPath": "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\warni\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -1,4 +1,5 @@
-﻿@model _01_ASP_MVC.Models.Product
+﻿@model _01_ASP_MVC.ViewModels.CreateProductVM
+
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,38 +11,47 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Product.Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Product.Name" class="control-label"></label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Product.Description" class="control-label"></label>
+                <input asp-for="Product.Description" class="form-control" />
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="Product.Price" class="control-label"></label>
+                <input asp-for="Product.Price" class="form-control" />
+                <span asp-validation-for="Product.Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
+                <label asp-for="Product.Amount" class="control-label"></label>
+                <input asp-for="Product.Amount" class="form-control" />
+                <span asp-validation-for="Product.Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
+                <label asp-for="Product.Image" class="control-label"></label>
+                <input type="file" name="File" class="form-control" />
+                <span asp-validation-for="Product.Image" class="text-danger"></span>
             </div>
+
+            @if (!string.IsNullOrEmpty(Model.Product.Image))
+            {
+                <div class="form-group">
+                    <label>Current Image:</label>
+                    <br />
+                    <img width="150" alt="@Model.Product.Name" src="~/images/products/@Model.Product.Image" />
+                </div>
+            }
             <div class="form-group">
-                <label asp-for="CategiryId" class="control-label"></label>
-                <select asp-for="CategiryId" class="form-control" asp-items="ViewBag.CategiryId"></select>
-                <span asp-validation-for="CategiryId" class="text-danger"></span>
+                <label for="category" class="col-sm-2 col-form-label">Category</label>
+                <select class="form-select" asp-for="Product.CategiryId" asp-items="@Model.Categories">
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

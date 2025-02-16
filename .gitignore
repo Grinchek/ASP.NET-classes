@@ -1,0 +1,5 @@
+# Ignoring appsettings.json
+appsettings.json
+
+# Ignoring folder images inside wwwroot
+wwwroot/images/
