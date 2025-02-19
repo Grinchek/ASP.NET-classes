@@ -1,34 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _01_ASP_MVC.Data;
 using _01_ASP_MVC.Models;
-using Microsoft.Extensions.Hosting;
 using _01_ASP_MVC.ViewModels;
+using _01_ASP_MVC.Repositories.Models;
+using _01_ASP_MVC.Services.Image;
 
 namespace _01_ASP_MVC.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductsController
+       (IProductRepository productRepository, AppDBContext context, IImageService imageService)
+       : Controller
     {
-        private readonly AppDBContext _context;
-        private readonly IWebHostEnvironment _environment;
-
-        public ProductsController(AppDBContext context, IWebHostEnvironment environment)
-        {
-            _context = context;
-            _environment = environment;
-        }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            var appDBContext = _context.Products.Include(p => p.Category);
-            return View(await appDBContext.ToListAsync());
+            var products = await productRepository.GetAllAsync();
+
+            return View(products);
         }
+        public async Task<IActionResult> Filtered(string categoryId)
+        {
+            var products = await productRepository.GetAllByCategoryAsync(categoryId);
+
+            return View(products);
+        }
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(string id)
@@ -38,9 +37,7 @@ namespace _01_ASP_MVC.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await productRepository.FindByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -52,7 +49,7 @@ namespace _01_ASP_MVC.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            var categories = _context.Categories.AsEnumerable();
+            var categories = context.Categories.AsEnumerable();
 
             var viewModel = new CreateProductVM
             {
@@ -71,19 +68,19 @@ namespace _01_ASP_MVC.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task <IActionResult> Create([FromForm] CreateProductVM viewModel)
+        public async Task<IActionResult> Create([FromForm] CreateProductVM viewModel)
         {
             string? imagePath = null;
 
             if (viewModel.File != null)
             {
-                imagePath = SaveImage(viewModel.File);
+                imagePath = await imageService.SaveImageAsync(viewModel.File, Settings.ProductsImagesPath);
             }
 
             viewModel.Product.Image = imagePath;
             viewModel.Product.Id = Guid.NewGuid().ToString();
-            _context.Products.Add(viewModel.Product);
-            await _context.SaveChangesAsync();
+            context.Products.Add(viewModel.Product);
+            await context.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }
@@ -96,13 +93,13 @@ namespace _01_ASP_MVC.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await productRepository.FindByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            var categories = _context.Categories.AsEnumerable();
+            var categories = context.Categories.AsEnumerable();
 
             var viewModel = new CreateProductVM
             {
@@ -131,7 +128,7 @@ namespace _01_ASP_MVC.Controllers
             {
                 try
                 {
-                    var product = await _context.Products.FindAsync(id);
+                    var product = await productRepository.FindByIdAsync(id);
                     if (product == null)
                     {
                         return NotFound();
@@ -144,11 +141,11 @@ namespace _01_ASP_MVC.Controllers
 
                     if (viewModel.File != null)
                     {
-                        product.Image = SaveImage(viewModel.File);
+                        product.Image = await imageService.SaveImageAsync(viewModel.File, Settings.ProductsImagesPath);
                     }
 
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
+                    context.Update(product);
+                    await context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -175,9 +172,7 @@ namespace _01_ASP_MVC.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await productRepository.FindByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -189,42 +184,26 @@ namespace _01_ASP_MVC.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteAsync(Product model)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
+            string? imageName = model.Image;
+
+            if (model.Id == null)
+                return NotFound();
+
+            var res = await productRepository.DeleteAsync(model.Id);
+
+            if (res && imageName != null)
             {
-                _context.Products.Remove(product);
+                imageService.DeleteFile(Path.Combine(Settings.ProductsImagesPath, imageName));
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
 
         private bool ProductExists(string id)
         {
-            return _context.Products.Any(e => e.Id == id);
-        }
-        private string? SaveImage(IFormFile file)
-        {
-            var types = file.ContentType.Split("/");
-            if (types[0] != "image")
-            {
-                return null;
-            }
-
-            string fileName = $"{Guid.NewGuid()}.{types[1]}";
-            string imagesPath = Path.Combine(_environment.WebRootPath, "images", "products");
-            string filePath = Path.Combine(imagesPath, fileName);
-            using (var stream = file.OpenReadStream())
-            {
-                using (var fileStream = System.IO.File.Create(filePath))
-                {
-                    stream.CopyTo(fileStream);
-                }
-            }
-
-            return fileName;
+            return context.Products.Any(e => e.Id == id);
         }
     }
 }

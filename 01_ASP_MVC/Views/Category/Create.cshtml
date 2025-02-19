@@ -1,4 +1,5 @@
-﻿@model Category
+﻿@model _01_ASP_MVC.ViewModels.CreateCategoryVM
+
 
 <form asp-action="create" method="post">
     <div class="mb-3 row">
@@ -7,6 +8,6 @@
             <input type="text" class="form-control" asp-for="Name">
         </div>
     </div>
-    <input type="submit" class="btn btn-success" />
+    <input type="submit" class="btn btn-success" value="Create"/>
     <a class="btn btn-dark" asp-action="Index">Back</a>
 </form>

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "y2TF6aJmBbljSySNm0ZrAR2N7ea5LiOO1zyMxc/z8HU=",
+  "Hash": "f3yFXj6apYWbB2R/vD/6nPDNaPdHUWEEkY6kZtXPCVg=",
   "Source": "01_ASP_MVC",
   "BasePath": "_content/01_ASP_MVC",
   "Mode": "Default",
@@ -205,6 +205,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\products\\default.png"
+    },
+    {
+      "Identity": "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\wwwroot\\images\\products\\f340ed82-f19f-45e2-87a3-c1464283bf3a.webp",
+      "SourceId": "01_ASP_MVC",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\wwwroot\\",
+      "BasePath": "_content/01_ASP_MVC",
+      "RelativePath": "images/products/f340ed82-f19f-45e2-87a3-c1464283bf3a.webp",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\products\\f340ed82-f19f-45e2-87a3-c1464283bf3a.webp"
     },
     {
       "Identity": "C:\\Users\\User\\Desktop\\ASP_MVC\\01_ASP_MVC\\wwwroot\\images\\products\\geforce.webp",
