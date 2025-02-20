@@ -1,24 +1,11 @@
 ﻿@model IEnumerable<_01_ASP_MVC.Models.Product>
 
+
 <div class="container">
-    <h1>Products</h1>
-
-    <form asp-action="Filtered" method="get" class="mb-3">
-        <div class="form-group">
-            <label for="category" class="form-label">Category</label>
-            <select class="form-select" name="categoryId" onchange="this.form.submit()">
-                <option value="">All Categories</option>
-                @foreach (var category in ViewBag.Categories)
-                {
-                    <option value="@category.Id">@category.Name</option>
-                }
-            </select>
-        </div>
-    </form>
-
     <div class="row">
         @foreach (var item in Model)
         {
+
             <div class="col-3">
                 <a class="col-3" asp-action="Details" asp-route-id="@item.Id" style="display:block; width: 18rem;text-decoration: none;">
                     <img width="100" alt="@item.Image" src="~/images/products/@(item.Image ?? "default.png")" />
@@ -28,6 +15,8 @@
                     </div>
                 </a>
             </div>
+
+
         }
     </div>
 </div>

@@ -21,13 +21,7 @@ namespace _01_ASP_MVC.Controllers
 
             return View(products);
         }
-        public async Task<IActionResult> Filtered(string categoryId)
-        {
-            var products = await productRepository.GetAllByCategoryAsync(categoryId);
-
-            return View(products);
-        }
-
+      
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(string id)
