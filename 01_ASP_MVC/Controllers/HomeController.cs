@@ -22,14 +22,14 @@ namespace _01_ASP_MVC.Controllers
         public async Task<IActionResult> IndexAsync()
         {
             var products = await productRepository.GetAllAsync();
-            ViewBag.Categories = await context.Categories.ToListAsync(); // Передаємо категорії у ViewBag
+            ViewBag.Categories = await context.Categories.ToListAsync();
             return View(products);
         }
 
         public async Task<IActionResult> Filtered(string categoryId)
         {
             var products = await productRepository.GetAllByCategoryAsync(categoryId);
-            ViewBag.Categories = await context.Categories.ToListAsync(); // Передаємо категорії у ViewBag
+            ViewBag.Categories = await context.Categories.ToListAsync();
             return View("Index", products);
         }
         public async Task<IActionResult> Details(string id)
